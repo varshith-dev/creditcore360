@@ -1,0 +1,467 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - Intelli-Credit{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Five Cs Scores -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-chart-radar"></i> Five Cs Credit Analysis
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="radarChart" width="400" height="400"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Credit Assessment</h5>
+                        <div id="creditScore">
+                            <div class="text-center mb-3">
+                                <h2 id="totalScore" class="display-4">--</h2>
+                                <span id="gradeBadge" class="score-badge">Calculating...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <h6>Individual Scores</h6>
+                                <div id="individualScores">
+                                    <!-- Scores will be populated here -->
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h6>Loan Structure</h6>
+                                <div id="loanStructure">
+                                    <!-- Loan details will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Risk Flags -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i> Risk Flags
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="riskFlags">
+                    <!-- Risk flags will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CIBIL Summary -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-credit-card"></i> CIBIL Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="cibilSummary">
+                    <!-- CIBIL data will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Research Findings -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-search"></i> Research Findings
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="researchFindings">
+                    <!-- Research findings will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cross-Validation -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-check-double"></i> Cross-Validation
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="crossValidation">
+                    <!-- Cross-validation results will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12 text-center">
+        <button id="generateCamBtn" class="btn btn-primary btn-lg" onclick="generateCAM()">
+            <i class="fas fa-file-alt"></i> Generate CAM
+        </button>
+        <a href="/upload" class="btn btn-secondary btn-lg ms-2">
+            <i class="fas fa-plus"></i> New Analysis
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let creditData = null;
+let radarChart = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadAnalysisResults();
+});
+
+async function loadAnalysisResults() {
+    try {
+        // In a real implementation, this would load from session or API
+        // For now, we'll use mock data
+        creditData = getMockCreditData();
+        displayResults();
+    } catch (error) {
+        console.error('Failed to load results:', error);
+        showAlert('Failed to load analysis results', 'danger');
+    }
+}
+
+function displayResults() {
+    if (!creditData) return;
+    
+    // Display Five Cs radar chart
+    createRadarChart();
+    
+    // Display credit score and grade
+    displayCreditScore();
+    
+    // Display individual scores
+    displayIndividualScores();
+    
+    // Display loan structure
+    displayLoanStructure();
+    
+    // Display risk flags
+    displayRiskFlags();
+    
+    // Display CIBIL summary
+    displayCibilSummary();
+    
+    // Display research findings
+    displayResearchFindings();
+    
+    // Display cross-validation
+    displayCrossValidation();
+}
+
+function createRadarChart() {
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    
+    const data = {
+        labels: ['Character', 'Capacity', 'Capital', 'Collateral', 'Conditions'],
+        datasets: [{
+            label: 'Credit Scores',
+            data: [
+                creditData.five_c_scores.character,
+                creditData.five_c_scores.capacity,
+                creditData.five_c_scores.capital,
+                creditData.five_c_scores.collateral,
+                creditData.five_c_scores.conditions
+            ],
+            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+            borderColor: 'rgba(52, 152, 219, 1)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(52, 152, 219, 1)'
+        }]
+    };
+    
+    const config = {
+        type: 'radar',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        stepSize: 20
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    };
+    
+    if (radarChart) {
+        radarChart.destroy();
+    }
+    
+    radarChart = new Chart(ctx, config);
+}
+
+function displayCreditScore() {
+    const totalScoreEl = document.getElementById('totalScore');
+    const gradeBadgeEl = document.getElementById('gradeBadge');
+    
+    totalScoreEl.textContent = creditData.total_score.toFixed(1);
+    
+    let gradeClass = '';
+    let gradeText = '';
+    
+    switch (creditData.grade) {
+        case 'LOW_RISK':
+            gradeClass = 'score-low-risk';
+            gradeText = 'LOW RISK';
+            break;
+        case 'MODERATE_RISK':
+            gradeClass = 'score-moderate-risk';
+            gradeText = 'MODERATE RISK';
+            break;
+        case 'HIGH_RISK':
+            gradeClass = 'score-high-risk';
+            gradeText = 'HIGH RISK';
+            break;
+        case 'DECLINE':
+            gradeClass = 'score-decline';
+            gradeText = 'DECLINE';
+            break;
+    }
+    
+    gradeBadgeEl.className = `score-badge ${gradeClass}`;
+    gradeBadgeEl.textContent = gradeText;
+}
+
+function displayIndividualScores() {
+    const container = document.getElementById('individualScores');
+    const scores = [
+        { name: 'Character', value: creditData.five_c_scores.character, weight: '25%' },
+        { name: 'Capacity', value: creditData.five_c_scores.capacity, weight: '30%' },
+        { name: 'Capital', value: creditData.five_c_scores.capital, weight: '20%' },
+        { name: 'Collateral', value: creditData.five_c_scores.collateral, weight: '15%' },
+        { name: 'Conditions', value: creditData.five_c_scores.conditions, weight: '10%' }
+    ];
+    
+    container.innerHTML = scores.map(score => `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span>${score.name} (${score.weight})</span>
+            <strong>${score.value.toFixed(1)}</strong>
+        </div>
+        <div class="progress mb-3" style="height: 8px;">
+            <div class="progress-bar" style="width: ${score.value}%"></div>
+        </div>
+    `).join('');
+}
+
+function displayLoanStructure() {
+    const container = document.getElementById('loanStructure');
+    const loan = creditData.loan_limit;
+    
+    if (!loan) {
+        container.innerHTML = '<p class="text-muted">Loan structure not calculated</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <div class="mb-2">
+            <strong>Loan Limit:</strong><br>
+            ${formatCurrency(loan.final_limit_inr)}
+        </div>
+        <div class="mb-2">
+            <strong>Interest Rate:</strong><br>
+            ${creditData.interest_rate_pct}%
+        </div>
+        <div class="mb-2">
+            <strong>Tenor:</strong><br>
+            ${creditData.tenor_months} months
+        </div>
+        <div class="text-muted">
+            <small>Binding: ${loan.binding_ceiling.replace('_', ' ')}</small>
+        </div>
+    `;
+}
+
+function displayRiskFlags() {
+    const container = document.getElementById('riskFlags');
+    const flags = creditData.validation_flags || [];
+    
+    if (flags.length === 0) {
+        container.innerHTML = '<p class="text-muted">No risk flags identified</p>';
+        return;
+    }
+    
+    container.innerHTML = flags.map(flag => {
+        let severityClass = '';
+        switch (flag.severity) {
+            case 'CRITICAL': severityClass = 'risk-critical'; break;
+            case 'HIGH': severityClass = 'risk-high'; break;
+            case 'MEDIUM': severityClass = 'risk-medium'; break;
+            case 'LOW': severityClass = 'risk-low'; break;
+        }
+        
+        return `
+            <div class="risk-flag ${severityClass} mb-2">
+                <strong>${flag.flag_type.replace('_', ' ')}</strong>
+                <br>
+                <small>${flag.description}</small>
+            </div>
+        `;
+    }).join('');
+}
+
+function displayCibilSummary() {
+    const container = document.getElementById('cibilSummary');
+    const cibil = creditData.cibil_data;
+    
+    if (!cibil) {
+        container.innerHTML = '<p class="text-muted">CIBIL data not available</p>';
+        return;
+    }
+    
+    let rankClass = '';
+    if (cibil.cmr_rank <= 3) rankClass = 'text-success';
+    else if (cibil.cmr_rank <= 6) rankClass = 'text-warning';
+    else rankClass = 'text-danger';
+    
+    container.innerHTML = `
+        <div class="mb-2">
+            <strong>CMR Rank:</strong><br>
+            <span class="${rankClass}">${cibil.cmr_rank}/10</span>
+        </div>
+        <div class="mb-2">
+            <strong>Overdue Amount:</strong><br>
+            ${formatCurrency(cibil.overdue_amount_inr)}
+        </div>
+        <div class="mb-2">
+            <strong>Credit Enquiries (6m):</strong><br>
+            ${cibil.credit_enquiries_6m}
+        </div>
+        <div class="text-muted">
+            <small>Active Facilities: ${cibil.active_credit_facilities.length}</small>
+        </div>
+    `;
+}
+
+function displayResearchFindings() {
+    const container = document.getElementById('researchFindings');
+    // Mock data for now
+    container.innerHTML = `
+        <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle"></i> Research Status</h6>
+            <p class="mb-0">External research data will be displayed here once the research agent is implemented.</p>
+        </div>
+    `;
+}
+
+function displayCrossValidation() {
+    const container = document.getElementById('crossValidation');
+    const flags = creditData.validation_flags || [];
+    
+    const validationTypes = ['GST_ITC_MISMATCH', 'REVENUE_INFLATION_RISK', 'CASH_LEAKAGE_RISK'];
+    const validationResults = validationTypes.map(type => {
+        const flag = flags.find(f => f.flag_type === type);
+        return {
+            type: type.replace('_', ' '),
+            status: flag ? 'Flagged' : 'Clear',
+            severity: flag ? flag.severity : 'LOW'
+        };
+    });
+    
+    container.innerHTML = validationResults.map(result => {
+        let statusClass = result.status === 'Clear' ? 'text-success' : 'text-warning';
+        return `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span>${result.type}</span>
+                <span class="${statusClass}">${result.status}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+async function generateCAM() {
+    const btn = document.getElementById('generateCamBtn');
+    showLoading(btn);
+    
+    try {
+        // In a real implementation, this would call the CAM generation API
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing
+        
+        showAlert('CAM generated successfully!', 'success');
+        
+        // Redirect to CAM preview
+        window.location.href = '/preview';
+        
+    } catch (error) {
+        console.error('CAM generation failed:', error);
+        showAlert('CAM generation failed', 'danger');
+    } finally {
+        hideLoading(btn);
+    }
+}
+
+function getMockCreditData() {
+    return {
+        company_name: "Demo Industries Ltd",
+        cin: "U12345MH2010PLC123456",
+        five_c_scores: {
+            character: 75.0,
+            capacity: 82.0,
+            capital: 68.0,
+            collateral: 71.0,
+            conditions: 78.0
+        },
+        total_score: 75.4,
+        grade: 'MODERATE_RISK',
+        loan_limit: {
+            final_limit_inr: 25000000,
+            binding_ceiling: 'cash_flow'
+        },
+        interest_rate_pct: 12.5,
+        tenor_months: 60,
+        validation_flags: [
+            {
+                flag_type: 'GST_ITC_MISMATCH',
+                severity: 'MEDIUM',
+                description: 'GST ITC mismatch detected between GSTR-2A and GSTR-3B'
+            }
+        ],
+        cibil_data: {
+            cmr_rank: 6,
+            overdue_amount_inr: 0,
+            credit_enquiries_6m: 3,
+            active_credit_facilities: ['Working Capital - SBI', 'Term Loan - HDFC']
+        }
+    };
+}
+</script>
+{% endblock %}

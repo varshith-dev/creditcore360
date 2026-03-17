@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Officer Portal - Intelli-Credit{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-tie"></i> Credit Officer Portal
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Company Information -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="companyName" class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="companyName" value="Demo Industries Ltd" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cin" class="form-label">CIN</label>
+                            <input type="text" class="form-control" id="cin" value="U12345MH2010PLC123456" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Scores Display -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5>Current Five Cs Scores</h5>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <label class="form-label">Character</label>
+                                    <input type="range" class="form-range" id="characterScore" min="0" max="100" value="75" onchange="updateScore('character', this.value)">
+                                    <div class="score-display" id="characterDisplay">75</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <label class="form-label">Capacity</label>
+                                    <input type="range" class="form-range" id="capacityScore" min="0" max="100" value="82" onchange="updateScore('capacity', this.value)">
+                                    <div class="score-display" id="capacityDisplay">82</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <label class="form-label">Capital</label>
+                                    <input type="range" class="form-range" id="capitalScore" min="0" max="100" value="68" onchange="updateScore('capital', this.value)">
+                                    <div class="score-display" id="capitalDisplay">68</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <label class="form-label">Collateral</label>
+                                    <input type="range" class="form-range" id="collateralScore" min="0" max="100" value="71" onchange="updateScore('collateral', this.value)">
+                                    <div class="score-display" id="collateralDisplay">71</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <label class="form-label">Conditions</label>
+                                    <input type="range" class="form-range" id="conditionsScore" min="0" max="100" value="78" onchange="updateScore('conditions', this.value)">
+                                    <div class="score-display" id="conditionsDisplay">78</div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="text-center">
+                                    <label class="form-label">Total</label>
+                                    <div class="h4" id="totalScore">75.4</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Field Observations -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5>Field Visit Observations</h5>
+                        <div class="form-group">
+                            <label for="observations" class="form-label">
+                                Enter your factory visit / management interview notes
+                            </label>
+                            <textarea class="form-control" id="observations" rows="6" 
+                                placeholder="Describe your observations from the site visit, management interactions, facility conditions, operational status, etc."
+                                oninput="detectKeywords(this.value)"></textarea>
+                        </div>
+                        
+                        <!-- Real-time Keyword Detection -->
+                        <div id="keywordDetection" class="mt-2">
+                            <h6>Detected Keywords:</h6>
+                            <div id="detectedKeywords" class="d-flex flex-wrap">
+                                <!-- Keywords will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Score Adjustment Reasons -->
+                <div class="row mb-4" id="adjustmentReasons" style="display: none;">
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Score Adjustments Detected</h6>
+                            <p class="mb-2">The following keywords triggered score adjustments:</p>
+                            <div id="adjustmentList">
+                                <!-- Adjustments will be listed here -->
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="adjustmentReason" class="form-label">
+                                    Please provide reason for manual score adjustments:
+                                </label>
+                                <textarea class="form-control" id="adjustmentReason" rows="3" 
+                                    placeholder="Explain why you adjusted the scores..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <button id="runAnalysisBtn" class="btn btn-primary btn-lg" onclick="runFullAnalysis()">
+                            <i class="fas fa-play"></i> Run Full Analysis
+                        </button>
+                        <button class="btn btn-secondary btn-lg ms-2" onclick="resetScores()">
+                            <i class="fas fa-undo"></i> Reset Scores
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.score-display {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #3498db;
+    margin-top: 5px;
+}
+
+.keyword-highlight {
+    background-color: #fff3cd;
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin: 2px;
+    display: inline-block;
+}
+
+.form-range {
+    width: 100%;
+}
+
+#detectedKeywords .keyword-highlight {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#detectedKeywords .keyword-highlight:hover {
+    background-color: #ffeaa7;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const scoreAdjustments = {
+    'idle_machinery': { capacity: -8 },
+    'capacity_underutilised': { capacity: -5 },
+    'promoter_absent': { character: -10 },
+    'overdue_creditors': { capital: -7 },
+    'working_capital_stress': { capacity: -6 },
+    'strong_management': { character: 5 },
+    'modern_facility': { collateral: 3 },
+    'clean_premises': { character: 3 }
+};
+
+const keywordPatterns = {
+    'idle_machinery': ['idle machinery', 'unused equipment', 'machinery not running'],
+    'capacity_underutilised': ['underutilised', 'low capacity', 'not running at full'],
+    'promoter_absent': ['promoter absent', 'management not available', 'no promoter'],
+    'overdue_creditors': ['overdue creditors', 'pending payments', 'delayed payments'],
+    'working_capital_stress': ['working capital issues', 'cash flow problems', 'liquidity issues'],
+    'strong_management': ['strong management', 'experienced team', 'competent management'],
+    'modern_facility': ['modern facility', 'new equipment', 'state of the art'],
+    'clean_premises': ['clean premises', 'well maintained', 'good housekeeping']
+};
+
+let originalScores = {};
+let currentScores = {};
+let detectedKeywords = new Set();
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeScores();
+});
+
+function initializeScores() {
+    ['character', 'capacity', 'capital', 'collateral', 'conditions'].forEach(score => {
+        const value = parseInt(document.getElementById(score + 'Score').value);
+        originalScores[score] = value;
+        currentScores[score] = value;
+    });
+    updateTotalScore();
+}
+
+function updateScore(scoreType, value) {
+    currentScores[scoreType] = parseInt(value);
+    document.getElementById(scoreType + 'Display').textContent = value;
+    updateTotalScore();
+    checkForAdjustments();
+}
+
+function updateTotalScore() {
+    const weights = { character: 0.25, capacity: 0.30, capital: 0.20, collateral: 0.15, conditions: 0.10 };
+    let total = 0;
+    
+    for (const [score, value] of Object.entries(currentScores)) {
+        total += value * weights[score];
+    }
+    
+    document.getElementById('totalScore').textContent = total.toFixed(1);
+}
+
+function detectKeywords(text) {
+    detectedKeywords.clear();
+    const keywordsContainer = document.getElementById('detectedKeywords');
+    keywordsContainer.innerHTML = '';
+    
+    for (const [category, patterns] of Object.entries(keywordPatterns)) {
+        for (const pattern of patterns) {
+            if (text.toLowerCase().includes(pattern.toLowerCase())) {
+                detectedKeywords.add(category);
+                
+                const keywordSpan = document.createElement('span');
+                keywordSpan.className = 'keyword-highlight';
+                keywordSpan.textContent = category.replace('_', ' ');
+                keywordSpan.onclick = () => showKeywordInfo(category);
+                keywordsContainer.appendChild(keywordSpan);
+                break; // Only show each category once
+            }
+        }
+    }
+    
+    if (detectedKeywords.size === 0) {
+        keywordsContainer.innerHTML = '<span class="text-muted">No keywords detected</span>';
+    }
+    
+    checkForAdjustments();
+}
+
+function checkForAdjustments() {
+    const adjustmentsList = document.getElementById('adjustmentList');
+    const adjustmentReasons = document.getElementById('adjustmentReasons');
+    let hasAdjustments = false;
+    let adjustmentsHtml = '';
+    
+    // Reset to original scores first
+    for (const [score, value] of Object.entries(originalScores)) {
+        currentScores[score] = value;
+        document.getElementById(score + 'Score').value = value;
+        document.getElementById(score + 'Display').textContent = value;
+    }
+    
+    // Apply adjustments based on detected keywords
+    for (const keyword of detectedKeywords) {
+        const adjustment = scoreAdjustments[keyword];
+        if (adjustment) {
+            hasAdjustments = true;
+            
+            for (const [score, change] of Object.entries(adjustment)) {
+                currentScores[score] = Math.max(0, Math.min(100, currentScores[score] + change));
+                document.getElementById(score + 'Score').value = currentScores[score];
+                document.getElementById(score + 'Display').textContent = currentScores[score];
+            }
+            
+            adjustmentsHtml += `
+                <div class="mb-1">
+                    <strong>${keyword.replace('_', ' ')}:</strong>
+                    ${Object.entries(adjustment).map(([score, change]) => 
+                        `${score} ${change > 0 ? '+' : ''}${change}`
+                    ).join(', ')}
+                </div>
+            `;
+        }
+    }
+    
+    if (hasAdjustments) {
+        adjustmentsList.innerHTML = adjustmentsHtml;
+        adjustmentReasons.style.display = 'block';
+    } else {
+        adjustmentReasons.style.display = 'none';
+    }
+    
+    updateTotalScore();
+}
+
+function showKeywordInfo(keyword) {
+    const adjustment = scoreAdjustments[keyword];
+    if (adjustment) {
+        const adjustments = Object.entries(adjustment).map(([score, change]) => 
+            `${score}: ${change > 0 ? '+' : ''}${change}`
+        ).join(', ');
+        
+        showAlert(`Keyword "${keyword.replace('_', ' ')}" triggers adjustments: ${adjustments}`, 'info');
+    }
+}
+
+function resetScores() {
+    for (const [score, value] of Object.entries(originalScores)) {
+        currentScores[score] = value;
+        document.getElementById(score + 'Score').value = value;
+        document.getElementById(score + 'Display').textContent = value;
+    }
+    
+    document.getElementById('observations').value = '';
+    document.getElementById('adjustmentReason').value = '';
+    document.getElementById('adjustmentReasons').style.display = 'none';
+    detectedKeywords.clear();
+    
+    detectKeywords('');
+    updateTotalScore();
+    
+    showAlert('Scores reset to original values', 'info');
+}
+
+async function runFullAnalysis() {
+    const btn = document.getElementById('runAnalysisBtn');
+    showLoading(btn);
+    
+    try {
+        // Collect data
+        const analysisData = {
+            company_name: document.getElementById('companyName').value,
+            cin: document.getElementById('cin').value,
+            officer_observations: document.getElementById('observations').value,
+            manual_scores: currentScores,
+            adjustment_reason: document.getElementById('adjustmentReason').value
+        };
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        showAlert('Analysis completed successfully!', 'success');
+        
+        // Redirect to results page
+        window.location.href = '/results';
+        
+    } catch (error) {
+        console.error('Analysis failed:', error);
+        showAlert('Analysis failed: ' + error.message, 'danger');
+    } finally {
+        hideLoading(btn);
+    }
+}
+</script>
+{% endblock %}

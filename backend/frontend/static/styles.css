@@ -1,0 +1,412 @@
+/* Intelli-Credit Custom Styles */
+
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --light-bg: #ecf0f1;
+    --dark-text: #2c3e50;
+    --border-color: #dee2e6;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark-text);
+    line-height: 1.6;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: bold;
+    color: var(--primary-color) !important;
+    font-size: 1.5rem;
+}
+
+.navbar-brand i {
+    margin-right: 8px;
+    color: var(--secondary-color);
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--secondary-color) !important;
+}
+
+.nav-link i {
+    margin-right: 5px;
+}
+
+/* Cards */
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
+}
+
+.card-header h4,
+.card-header h5,
+.card-header h6 {
+    margin-bottom: 0;
+    color: white;
+}
+
+/* Upload Zone */
+.upload-zone {
+    border: 3px dashed var(--border-color);
+    border-radius: 15px;
+    padding: 50px 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-zone:hover {
+    border-color: var(--secondary-color);
+    background-color: #f8f9fa;
+    transform: scale(1.02);
+}
+
+.upload-zone.dragover {
+    border-color: var(--success-color);
+    background-color: #e8f5e8;
+    transform: scale(1.05);
+}
+
+.upload-zone i {
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.upload-zone:hover i {
+    transform: scale(1.1);
+}
+
+/* Progress */
+.progress {
+    height: 25px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--secondary-color), #2980b9);
+    transition: width 0.6s ease;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2980b9, #21618c);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color), #229954);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger-color), #c0392b);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+}
+
+/* Score Badges */
+.score-badge {
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: bold;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.score-low-risk {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.score-moderate-risk {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border: 2px solid #ffeaa7;
+}
+
+.score-high-risk {
+    background: linear-gradient(135deg, #f8d7da, #f5b7b1);
+    color: #721c24;
+    border: 2px solid #f5b7b1;
+}
+
+.score-decline {
+    background: linear-gradient(135deg, #f5c6cb, #e5a5a5);
+    color: #491217;
+    border: 2px solid #e5a5a5;
+}
+
+/* Risk Flags */
+.risk-flag {
+    padding: 10px 15px;
+    margin: 3px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: inline-block;
+    font-weight: 600;
+    text-transform: capitalize;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.risk-critical {
+    background: linear-gradient(135deg, #f8d7da, #f5b7b1);
+    color: #721c24;
+    border-left: 4px solid #721c24;
+}
+
+.risk-high {
+    background: linear-gradient(135deg, #fcf8e3, #f5e6d3);
+    color: #8a6d3b;
+    border-left: 4px solid #8a6d3b;
+}
+
+.risk-medium {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+    border-left: 4px solid #0c5460;
+}
+
+.risk-low {
+    background: linear-gradient(135deg, #e2e3e5, #d6d8db);
+    color: #383d41;
+    border-left: 4px solid #383d41;
+}
+
+/* Forms */
+.form-control {
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.form-select {
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-range {
+    height: 8px;
+    background: linear-gradient(to right, var(--danger-color), var(--warning-color), var(--success-color));
+}
+
+/* Loading States */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Alerts */
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5b7b1);
+    color: #721c24;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+}
+
+/* Tables */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table thead th {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Blockquotes */
+.blockquote {
+    border-left: 4px solid var(--secondary-color);
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    margin: 20px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .upload-zone {
+        padding: 30px 15px;
+    }
+    
+    .score-badge {
+        font-size: 0.8rem;
+        padding: 8px 15px;
+    }
+    
+    .risk-flag {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2980b9;
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    .upload-zone {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .card-header {
+        background: #f8f9fa !important;
+        color: var(--dark-text) !important;
+    }
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Intelli-Credit - AI-Powered Credit Appraisal{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .upload-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--secondary-color);
+            background-color: #f8f9fa;
+        }
+        
+        .upload-zone.dragover {
+            border-color: var(--secondary-color);
+            background-color: #e3f2fd;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .progress-step.active {
+            color: var(--secondary-color);
+        }
+        
+        .progress-step.completed {
+            color: var(--success-color);
+        }
+        
+        .score-badge {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .score-low-risk {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .score-moderate-risk {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .score-high-risk {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .score-decline {
+            background-color: #f5c6cb;
+            color: #491217;
+        }
+        
+        .risk-flag {
+            padding: 8px 12px;
+            margin: 2px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+        
+        .risk-critical {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .risk-high {
+            background-color: #fcf8e3;
+            color: #8a6d3b;
+        }
+        
+        .risk-medium {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .risk-low {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .loading-spinner {
+            display: none;
+        }
+        
+        .loading.show .loading-spinner {
+            display: inline-block;
+        }
+        
+        .loading.show .loading-text {
+            display: none;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-brain"></i> Intelli-Credit
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">
+                            <i class="fas fa-upload"></i> Upload
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/portal">
+                            <i class="fas fa-user-tie"></i> Officer Portal
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/results">
+                            <i class="fas fa-chart-line"></i> Results
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/preview">
+                            <i class="fas fa-file-alt"></i> CAM Preview
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center py-3 mt-5">
+        <div class="container">
+            <p class="text-muted mb-0">
+                © 2024 Vivriti Capital - Intelli-Credit System
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Common JavaScript -->
+    <script>
+        // API Base URL
+        const API_BASE = '/api';
+        
+        // Common utility functions
+        function showLoading(element) {
+            element.classList.add('loading');
+        }
+        
+        function hideLoading(element) {
+            element.classList.remove('loading');
+        }
+        
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+        
+        // Format currency
+        function formatCurrency(amount) {
+            if (!amount) return '₹0';
+            
+            if (amount >= 10000000) {
+                return `₹${(amount / 10000000).toFixed(2)} Cr`;
+            } else if (amount >= 100000) {
+                return `₹${(amount / 100000).toFixed(2)} L`;
+            } else {
+                return `₹${amount.toLocaleString('en-IN')}`;
+            }
+        }
+        
+        // File upload utility
+        function setupFileUpload(uploadZone, fileInput, callback) {
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+            
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('dragover');
+            });
+            
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                
+                const files = Array.from(e.dataTransfer.files);
+                callback(files);
+            });
+            
+            uploadZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', () => {
+                const files = Array.from(fileInput.files);
+                callback(files);
+            });
+        }
+        
+        // API request wrapper
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(API_BASE + url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API request failed:', error);
+                showAlert(`Request failed: ${error.message}`, 'danger');
+                throw error;
+            }
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

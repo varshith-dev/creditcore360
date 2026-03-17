@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+
+{% block title %}CAM Preview - Intelli-Credit{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-file-alt"></i> Credit Appraisal Memo (CAM)
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Executive Summary -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-header">
+                                <h5 class="mb-0">Executive Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <h6>Credit Decision</h6>
+                                            <div id="decisionBadge" class="score-badge score-moderate-risk">
+                                                MODERATE RISK
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <h6>Loan Limit</h6>
+                                            <h4 id="loanLimit">₹2.50 Cr</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <h6>Interest Rate</h6>
+                                            <h4 id="interestRate">12.5%</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center">
+                                            <h6>Tenor</h6>
+                                            <h4 id="tenor">60 months</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <p id="executiveSummary" class="mb-0">
+                                        Based on comprehensive analysis of financial statements, credit bureau data, and risk assessment, 
+                                        we recommend a loan facility of ₹2.50 Cr at 12.5% interest rate for 60 months. 
+                                        The borrower demonstrates moderate credit profile with stable cash flows.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Five Cs Analysis -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Five Cs Analysis</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="miniRadarChart" width="300" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Key Metrics</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="keyMetrics">
+                                    <!-- Metrics will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Officer Observations -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-user-tie"></i> Field Visit Observations
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="officerObservations">
+                                    <blockquote class="blockquote">
+                                        <p id="observationsText" class="mb-0">
+                                            Factory premises well-maintained with modern machinery. Management team experienced 
+                                            and demonstrates strong operational controls. Working capital requirements appear 
+                                            reasonable for business scale. No significant concerns observed during site visit.
+                                        </p>
+                                        <footer class="blockquote-footer">Credit Officer</footer>
+                                    </blockquote>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Summary -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-exclamation-triangle"></i> Risk Summary
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="riskSummary">
+                                    <!-- Risk summary will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Download Section -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="mb-3">Download Credit Appraisal Memo</h5>
+                                <div class="btn-group" role="group">
+                                    <button id="downloadWordBtn" class="btn btn-primary" onclick="downloadCAM('word')">
+                                        <i class="fas fa-file-word"></i> Download Word (.docx)
+                                    </button>
+                                    <button id="downloadPdfBtn" class="btn btn-danger" onclick="downloadCAM('pdf')">
+                                        <i class="fas fa-file-pdf"></i> Download PDF
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        CAM documents include detailed analysis, financial metrics, risk assessment, 
+                                        and credit recommendations for the credit committee.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let camData = null;
+let miniRadarChart = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadCAMData();
+});
+
+async function loadCAMData() {
+    try {
+        // In a real implementation, this would load from API
+        camData = getMockCAMData();
+        displayCAM();
+    } catch (error) {
+        console.error('Failed to load CAM data:', error);
+        showAlert('Failed to load CAM data', 'danger');
+    }
+}
+
+function displayCAM() {
+    if (!camData) return;
+    
+    // Display executive summary
+    displayExecutiveSummary();
+    
+    // Create mini radar chart
+    createMiniRadarChart();
+    
+    // Display key metrics
+    displayKeyMetrics();
+    
+    // Display officer observations
+    displayOfficerObservations();
+    
+    // Display risk summary
+    displayRiskSummary();
+}
+
+function displayExecutiveSummary() {
+    const decision = camData.credit_decision;
+    
+    // Update decision badge
+    const decisionBadge = document.getElementById('decisionBadge');
+    let gradeClass = '';
+    let gradeText = '';
+    
+    switch (decision.grade) {
+        case 'LOW_RISK':
+            gradeClass = 'score-low-risk';
+            gradeText = 'APPROVE';
+            break;
+        case 'MODERATE_RISK':
+            gradeClass = 'score-moderate-risk';
+            gradeText = 'APPROVE';
+            break;
+        case 'HIGH_RISK':
+            gradeClass = 'score-high-risk';
+            gradeText = 'REFER';
+            break;
+        case 'DECLINE':
+            gradeClass = 'score-decline';
+            gradeText = 'DECLINE';
+            break;
+    }
+    
+    decisionBadge.className = `score-badge ${gradeClass}`;
+    decisionBadge.textContent = gradeText;
+    
+    // Update loan details
+    document.getElementById('loanLimit').textContent = formatCurrency(decision.loan_limit.final_limit_inr);
+    document.getElementById('interestRate').textContent = decision.interest_rate_pct + '%';
+    document.getElementById('tenor').textContent = decision.tenor_months + ' months';
+}
+
+function createMiniRadarChart() {
+    const ctx = document.getElementById('miniRadarChart').getContext('2d');
+    const scores = camData.credit_decision.five_c_scores;
+    
+    const data = {
+        labels: ['Character', 'Capacity', 'Capital', 'Collateral', 'Conditions'],
+        datasets: [{
+            data: [
+                scores.character,
+                scores.capacity,
+                scores.capital,
+                scores.collateral,
+                scores.conditions
+            ],
+            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+            borderColor: 'rgba(52, 152, 219, 1)',
+            borderWidth: 2
+        }]
+    };
+    
+    const config = {
+        type: 'radar',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        display: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    };
+    
+    if (miniRadarChart) {
+        miniRadarChart.destroy();
+    }
+    
+    miniRadarChart = new Chart(ctx, config);
+}
+
+function displayKeyMetrics() {
+    const container = document.getElementById('keyMetrics');
+    const decision = camData.credit_decision;
+    
+    const metrics = [
+        { label: 'Total Score', value: decision.total_score.toFixed(1) + '/100' },
+        { label: 'DSCR', value: '1.85x' },
+        { label: 'Debt/Equity', value: '2.1x' },
+        { label: 'CIBIL Rank', value: decision.cibil_data.cmr_rank + '/10' },
+        { label: 'Binding Ceiling', value: decision.loan_limit.binding_ceiling.replace('_', ' ') }
+    ];
+    
+    container.innerHTML = metrics.map(metric => `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span>${metric.label}:</span>
+            <strong>${metric.value}</strong>
+        </div>
+    `).join('');
+}
+
+function displayOfficerObservations() {
+    const observations = camData.officer_observations;
+    if (observations) {
+        document.getElementById('observationsText').textContent = observations;
+    }
+}
+
+function displayRiskSummary() {
+    const container = document.getElementById('riskSummary');
+    const flags = camData.credit_decision.validation_flags || [];
+    
+    if (flags.length === 0) {
+        container.innerHTML = '<p class="text-success mb-0"><i class="fas fa-check-circle"></i> No significant risk factors identified</p>';
+        return;
+    }
+    
+    const criticalFlags = flags.filter(f => f.severity === 'CRITICAL').length;
+    const highFlags = flags.filter(f => f.severity === 'HIGH').length;
+    const mediumFlags = flags.filter(f => f.severity === 'MEDIUM').length;
+    const lowFlags = flags.filter(f => f.severity === 'LOW').length;
+    
+    container.innerHTML = `
+        <div class="row">
+            <div class="col-md-3">
+                <div class="text-center">
+                    <h4 class="text-danger">${criticalFlags}</h4>
+                    <small>Critical</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <h4 class="text-warning">${highFlags}</h4>
+                    <small>High</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <h4 class="text-info">${mediumFlags}</h4>
+                    <small>Medium</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <h4 class="text-secondary">${lowFlags}</h4>
+                    <small>Low</small>
+                </div>
+            </div>
+        </div>
+        
+        ${flags.length > 0 ? `
+            <div class="mt-3">
+                <h6>Flagged Issues:</h6>
+                ${flags.map(flag => `
+                    <div class="risk-flag risk-${flag.severity.toLowerCase()} mb-1">
+                        <small>${flag.flag_type.replace('_', ' ')}: ${flag.description}</small>
+                    </div>
+                `).join('')}
+            </div>
+        ` : ''}
+    `;
+}
+
+async function downloadCAM(format) {
+    const btn = format === 'word' ? document.getElementById('downloadWordBtn') : document.getElementById('downloadPdfBtn');
+    const originalText = btn.innerHTML;
+    
+    try {
+        showLoading(btn);
+        
+        // In a real implementation, this would download the actual generated files
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate download
+        
+        showAlert(`CAM downloaded successfully as ${format.toUpperCase()}!`, 'success');
+        
+        // Simulate file download
+        const filename = `CAM_${camData.credit_decision.cin}_${new Date().toISOString().split('T')[0]}.${format === 'word' ? 'docx' : 'pdf'}`;
+        console.log(`Downloading ${filename}`);
+        
+    } catch (error) {
+        console.error('Download failed:', error);
+        showAlert('Download failed', 'danger');
+    } finally {
+        hideLoading(btn);
+        btn.innerHTML = originalText;
+    }
+}
+
+function getMockCAMData() {
+    return {
+        credit_decision: {
+            company_name: "Demo Industries Ltd",
+            cin: "U12345MH2010PLC123456",
+            five_c_scores: {
+                character: 75.0,
+                capacity: 82.0,
+                capital: 68.0,
+                collateral: 71.0,
+                conditions: 78.0
+            },
+            total_score: 75.4,
+            grade: 'MODERATE_RISK',
+            loan_limit: {
+                final_limit_inr: 25000000,
+                binding_ceiling: 'cash_flow'
+            },
+            interest_rate_pct: 12.5,
+            tenor_months: 60,
+            cibil_data: {
+                cmr_rank: 6
+            },
+            validation_flags: [
+                {
+                    flag_type: 'GST_ITC_MISMATCH',
+                    severity: 'MEDIUM',
+                    description: 'GST ITC mismatch detected between GSTR-2A and GSTR-3B'
+                }
+            ]
+        },
+        officer_observations: "Factory premises well-maintained with modern machinery. Management team experienced and demonstrates strong operational controls. Working capital requirements appear reasonable for business scale. No significant concerns observed during site visit."
+    };
+}
+</script>
+{% endblock %}
