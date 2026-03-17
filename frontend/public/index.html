@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="AI-Powered Corporate Credit Appraisal Engine - Intelligent credit decisioning for India's mid-market lending" />
+    <meta name="keywords" content="credit appraisal, AI, lending, corporate finance, Five Cs, credit scoring" />
+    <meta name="author" content="Intelli-Credit Team" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="%PUBLIC_URL%" />
+    <meta property="og:title" content="Intelli-Credit - AI Credit Appraisal" />
+    <meta property="og:description" content="AI-Powered Corporate Credit Appraisal Engine for India's mid-market lending" />
+    <meta property="og:image" content="%PUBLIC_URL%/logo192.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="%PUBLIC_URL%" />
+    <meta property="twitter:title" content="Intelli-Credit - AI Credit Appraisal" />
+    <meta property="twitter:description" content="AI-Powered Corporate Credit Appraisal Engine for India's mid-market lending" />
+    <meta property="twitter:image" content="%PUBLIC_URL%/logo192.png" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ws: wss:;" />
+    
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="//api.intellicredit.com" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <title>Intelli-Credit - AI Credit Appraisal</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this application.</noscript>
+    <div id="root"></div>
+    
+    <!-- Loading fallback -->
+    <div id="loading-fallback" style="display: none;">
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;">
+        <div style="text-align: center; padding: 2rem; max-width: 400px;">
+          <div style="width: 50px; height: 50px; border: 3px solid #007bff; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+          <h2>Loading Intelli-Credit...</h2>
+          <p style="color: #666;">Please wait while we prepare your credit appraisal dashboard.</p>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      // Show loading fallback if React doesn't load
+      setTimeout(function() {
+        if (document.getElementById('root').children.length === 0) {
+          document.getElementById('loading-fallback').style.display = 'flex';
+        }
+      }, 3000);
+    </script>
+    
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </body>
+</html>
