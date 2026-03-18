@@ -7,11 +7,13 @@
 ### Step 1: Connect to Azure Server
 ```bash
 ssh varshith@4.213.160.42
+# Password: #varshith88
 ```
 
 ### Step 2: Setup Domain & SSL
 ```bash
 # Update system
+echo "📦 Updating system packages..."
 sudo apt update && sudo apt upgrade -y
 
 # Install Nginx and Certbot
@@ -50,7 +52,6 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
     }
 }
 ```
@@ -60,7 +61,7 @@ server {
 sudo ln -s /etc/nginx/sites-available/intelcredit /etc/nginx/sites-enabled/
 
 # Get SSL certificate
-sudo certbot --nginx -d intelcredit.truvgo.tech
+sudo certbot --nginx -d intelcredit.truvgo.tech --email admin@truvgo.tech
 
 # Test Nginx
 sudo nginx -t
@@ -69,12 +70,11 @@ sudo systemctl restart nginx
 
 ### Step 3: Deploy Intelli-Credit Application
 ```bash
-# Create application directory
-sudo mkdir -p /opt/intellicredit
-cd /opt/intellicredit
+# Clone repository
+git clone https://github.com/varshith-dev/creditcore360.git .
 
-# Clone the repository (replace with your actual repo)
-git clone <your-repo-url> .
+# Navigate to application directory
+cd /opt/intellicredit
 
 # Set permissions
 sudo chown -R varshith:varshith /opt/intellicredit
@@ -83,7 +83,31 @@ sudo chown -R varshith:varshith /opt/intellicredit
 ### Step 4: Configure Environment
 ```bash
 # Create environment file
-nano .env
+cat > .env << 'EOF'
+# Production Settings
+ENVIRONMENT=production
+DEBUG=false
+LOG_LEVEL=INFO
+
+# API Configuration
+REACT_APP_API_URL=https://intelcredit.truvgo.tech
+OLLAMA_BASE_URL=http://ollama:11434
+
+# Security Settings
+CORS_ORIGINS=https://intelcredit.truvgo.tech
+RATE_LIMIT_REQUESTS=100
+RATE_LIMIT_WINDOW=60
+
+# Resource Limits
+MAX_UPLOAD_SIZE_MB=100
+OCR_CONFIDENCE_THRESHOLD=75
+
+# Business Logic
+SECTOR_CAP_NBFC=500
+SECTOR_CAP_MANUFACTURING=200
+SECTOR_CAP_TRADING=100
+SECTOR_CAP_SERVICES=150
+EOF
 ```
 
 **Environment Variables** (`.env`):
@@ -120,28 +144,16 @@ ENVIRONMENT=production
 DEBUG=false
 ```
 
-### Step 5: Start Ollama (if not running)
+### Step 5: Start Services
 ```bash
-# Check if Ollama is running
-ollama list
-
-# Start Ollama service
-ollama serve &
-
-# Pull required model (if not already done)
-ollama pull gpt-oss
-```
-
-### Step 6: Deploy with Docker Compose
-```bash
-# Build and start services
-docker compose up -d --build
+# Deploy with production configuration
+docker compose -f docker-compose.prod.yml up -d --build
 
 # View logs
-docker compose logs -f
+docker compose -f docker-compose.prod.yml logs -f
 
 # Check status
-docker compose ps
+docker compose -f docker-compose.prod.yml ps
 ```
 
 ## 📋 Complete Deployment Script
@@ -158,8 +170,8 @@ echo "🚀 Deploying Intelli-Credit to Azure..."
 echo "📦 Updating system packages..."
 sudo apt update && sudo apt upgrade -y
 
-# Install required packages
-echo "🔧 Installing required packages..."
+# Install Docker and required packages
+echo "🐳 Installing Docker and required packages..."
 sudo apt install nginx certbot python3-certbot-nginx docker.io docker-compose git -y
 
 # Start and enable Docker
